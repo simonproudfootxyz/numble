@@ -68,7 +68,7 @@ export default function Home() {
   }, []);
 
   function getShareMessage() {
-    return `I guessed ${secret} in ${guesses.length}/6 tries! Think you can beat me? ${window.location.origin}`;
+    return `I guessed ${secret} on Numble in ${guesses.length}/6 tries! Think you can beat me? ${window.location.origin}`;
   }
 
   function showResultModal({ title, resultText, showShare }) {
