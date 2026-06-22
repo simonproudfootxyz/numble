@@ -168,7 +168,6 @@ export default function Home() {
     }
   }
 
-  console.log({ secret });
   return (
     <>
       <div className="app">
