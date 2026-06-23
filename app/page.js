@@ -108,7 +108,7 @@ export default function Home() {
       setMessage("");
       showResultModal({
         title: "You Win!",
-        resultText: `You got it in ${nextGuesses.length}/${MAX_GUESSES}!`,
+        resultText: `You guessed "${secret}" in ${nextGuesses.length}/${MAX_GUESSES} tries!`,
         showShare: true,
       });
       return;
