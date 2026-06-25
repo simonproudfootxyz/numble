@@ -44,7 +44,9 @@ export default function Home() {
   const [secret, setSecret] = useState("");
   const [guesses, setGuesses] = useState([]);
   const [guessInput, setGuessInput] = useState("");
-  const [message, setMessage] = useState("Guess the 7-digit number.");
+  const [message, setMessage] = useState(
+    "Guess the 7-digit phone number in 6 tries or less.",
+  );
   const [gameOver, setGameOver] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("Game Over");
@@ -56,7 +58,7 @@ export default function Home() {
     setSecret(randomDigitString(DIGITS));
     setGuesses([]);
     setGuessInput("");
-    setMessage("Guess the 7-digit number.");
+    setMessage("Guess the 7-digit phone number in 6 tries or less.");
     setGameOver(false);
     setIsModalOpen(false);
     setShowShareActions(false);
@@ -172,40 +174,11 @@ export default function Home() {
     <>
       <div className="app">
         <h1>Numble</h1>
-        <p>Guess the 7-digit number in 6 tries or less</p>
-        <div className="board">
-          {Array.from({ length: MAX_GUESSES }, (_, row) => {
-            const guessObj = guesses[row];
-            const digits = guessObj ? guessObj.value.split("") : [];
-
-            return (
-              <div className="row" key={row}>
-                {Array.from({ length: DIGITS }, (_, col) => {
-                  const digit = digits[col];
-                  const colorClass = guessObj ? guessObj.colors[col] : "";
-                  const tileClass = [
-                    "tile",
-                    digit !== undefined ? "filled" : "",
-                    colorClass,
-                  ]
-                    .filter(Boolean)
-                    .join(" ");
-
-                  return (
-                    <div className={tileClass} key={col}>
-                      {digit ?? ""}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
-
+        <p>Guess the 7-digit phone number in 6 tries or less</p>
         <div className="controls">
           <input
             id="guessInput"
-            inputMode="numeric"
+            inputMode="phone"
             maxLength={DIGITS}
             placeholder="Enter 7 digits"
             value={guessInput}
@@ -222,8 +195,39 @@ export default function Home() {
             Guess
           </button>
         </div>
+        <div className="board">
+          {Array.from({ length: MAX_GUESSES }, (_, row) => {
+            const guessObj = guesses[row];
+            const digits = guessObj ? guessObj.value.split("") : [];
 
-        <div className="message">{message}</div>
+            return (
+              <div className="row" key={row}>
+                {Array.from({ length: DIGITS }, (_, col) => {
+                  const digit = digits[col];
+                  const colorClass = guessObj ? guessObj.colors[col] : "";
+                  const isHyphen = col === 2;
+                  const tileClass = [
+                    "tile",
+                    digit !== undefined ? "filled" : "",
+                    colorClass,
+                  ]
+                    .filter(Boolean)
+                    .join(" ");
+                  return (
+                    <>
+                      <div className={tileClass} key={col}>
+                        {digit ?? ""}
+                      </div>
+                      {isHyphen && (
+                        <div className="tile tile--blank tile--hyphen">-</div>
+                      )}
+                    </>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
 
         <div className="legend">
           <span className="dot green" /> correct digit + position
