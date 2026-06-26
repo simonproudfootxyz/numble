@@ -40,6 +40,22 @@ function scoreGuess(guess, answer) {
   return result;
 }
 
+function getEmojiGrid(guessRows) {
+  const emojiByColor = {
+    green: "🟩",
+    yellow: "🟨",
+    gray: "⬛",
+  };
+
+  return guessRows
+    .map((row) =>
+      row.colors
+        .map((color) => emojiByColor[color] || emojiByColor.gray)
+        .join(""),
+    )
+    .join("\n");
+}
+
 export default function Home() {
   const [secret, setSecret] = useState("");
   const [guesses, setGuesses] = useState([]);
@@ -75,7 +91,8 @@ export default function Home() {
   };
 
   function getShareMessage() {
-    return `I guessed ${getPhoneNumber(secret)} on Numble in ${guesses.length}/6 tries! Think you can beat me? ${window.location.origin}`;
+    const emojiGrid = getEmojiGrid(guesses);
+    return `I guessed ${getPhoneNumber(secret)} on Numble Unlimited in ${guesses.length}/6 guesses! \n${emojiGrid}\nWant to try? ${window.location.origin}/unlimited`;
   }
 
   function showResultModal({ title, resultText, showShare }) {
@@ -255,8 +272,12 @@ export default function Home() {
             className="share"
             style={{ display: showShareActions ? "flex" : "none" }}
           >
-            <button type="button" className="secondary" onClick={shareOnReddit}>
-              Share on Reddit
+            <button
+              type="button"
+              className="secondary"
+              onClick={shareOnTwitter}
+            >
+              Share on Twitter
             </button>
             <button
               type="button"
@@ -265,12 +286,9 @@ export default function Home() {
             >
               Share on Bluesky
             </button>
-            <button
-              type="button"
-              className="secondary"
-              onClick={shareOnTwitter}
-            >
-              Share on Twitter
+
+            <button type="button" className="secondary" onClick={shareOnReddit}>
+              Share on Reddit
             </button>
             <button type="button" className="secondary" onClick={copyShareText}>
               Copy result

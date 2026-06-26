@@ -31,6 +31,22 @@ function isValidGuess(guess, digits) {
   return pattern.test(guess);
 }
 
+function getEmojiGrid(guessRows) {
+  const emojiByColor = {
+    green: "🟩",
+    yellow: "🟨",
+    gray: "⬛",
+  };
+
+  return guessRows
+    .map((row) =>
+      row.colors
+        .map((color) => emojiByColor[color] || emojiByColor.gray)
+        .join(""),
+    )
+    .join("\n");
+}
+
 export default function DailyChallengePage() {
   const [puzzleId, setPuzzleId] = useState("");
   const [digits, setDigits] = useState(FALLBACK_DIGITS);
@@ -127,7 +143,8 @@ export default function DailyChallengePage() {
   }, []);
 
   function getShareMessage() {
-    return `I solved today's Numble (${puzzleId}) in ${guesses.length}/6 tries! Think you can beat me? ${window.location.origin}/daily-challenge`;
+    const emojiGrid = getEmojiGrid(guesses);
+    return `I solved today's Numble (${puzzleId}) in ${guesses.length}/6 guesses! \n${emojiGrid}\nThink you can beat me? ${window.location.origin}`;
   }
 
   function openShareUrl(url) {
@@ -346,9 +363,14 @@ export default function DailyChallengePage() {
             className="share"
             style={{ display: showShareActions ? "flex" : "none" }}
           >
-            <button type="button" className="secondary" onClick={shareOnReddit}>
-              Share on Reddit
+            <button
+              type="button"
+              className="secondary"
+              onClick={shareOnTwitter}
+            >
+              Share on Twitter
             </button>
+
             <button
               type="button"
               className="secondary"
@@ -356,12 +378,8 @@ export default function DailyChallengePage() {
             >
               Share on Bluesky
             </button>
-            <button
-              type="button"
-              className="secondary"
-              onClick={shareOnTwitter}
-            >
-              Share on Twitter
+            <button type="button" className="secondary" onClick={shareOnReddit}>
+              Share on Reddit
             </button>
             <button type="button" className="secondary" onClick={copyShareText}>
               Copy result
