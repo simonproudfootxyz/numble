@@ -118,9 +118,8 @@ export default function DailyChallengePage() {
         setMessage("You already completed today's daily challenge.");
         setModalTitle(savedIsWin ? "You Win!" : "Out of Guesses");
         setModalResultText(
-          savedIsWin
-            ? `You got it in ${savedGuesses.length}/${data.maxGuesses}!`
-            : `Answer was ${savedAnswer}.`,
+          savedIsWin &&
+            `You got it in ${savedGuesses.length}/${data.maxGuesses} guesses!`,
         );
         setShowShareActions(savedIsWin);
         setIsModalOpen(true);
@@ -358,7 +357,8 @@ export default function DailyChallengePage() {
           aria-labelledby="dailyResultTitle"
         >
           <h2 id="dailyResultTitle">{modalTitle}</h2>
-          <p className="modal-result">{modalResultText}</p>
+          <p>{message}</p>
+          {modalResultText && <p className="modal-result">{modalResultText}</p>}
           <div
             className="share"
             style={{ display: showShareActions ? "flex" : "none" }}
