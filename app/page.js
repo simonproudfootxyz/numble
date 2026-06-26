@@ -1,134 +1,133 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
-const DIGITS = 7;
-const MAX_GUESSES = 6;
+const FALLBACK_DIGITS = 7;
+const FALLBACK_MAX_GUESSES = 6;
 
-function randomDigitString(length) {
-  let output = "";
-  for (let i = 0; i < length; i += 1) {
-    output += Math.floor(Math.random() * 10);
+function safeReadDailyState(storageKey) {
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    if (!raw) {
+      return null;
+    }
+    return JSON.parse(raw);
+  } catch {
+    return null;
   }
-  return output;
 }
 
-function scoreGuess(guess, answer) {
-  const result = Array(DIGITS).fill("gray");
-  const remainingCounts = {};
-
-  for (let i = 0; i < DIGITS; i += 1) {
-    if (guess[i] === answer[i]) {
-      result[i] = "green";
-      continue;
-    }
-    const answerDigit = answer[i];
-    remainingCounts[answerDigit] = (remainingCounts[answerDigit] || 0) + 1;
+function safeWriteDailyState(storageKey, state) {
+  try {
+    window.localStorage.setItem(storageKey, JSON.stringify(state));
+  } catch {
+    // Ignore storage failures (private mode/quota issues).
   }
-
-  for (let i = 0; i < DIGITS; i += 1) {
-    if (result[i] !== "gray") {
-      continue;
-    }
-    const guessDigit = guess[i];
-    if (remainingCounts[guessDigit] > 0) {
-      result[i] = "yellow";
-      remainingCounts[guessDigit] -= 1;
-    }
-  }
-
-  return result;
 }
 
-export default function Home() {
-  const [secret, setSecret] = useState("");
+function isValidGuess(guess, digits) {
+  const pattern = new RegExp(`^\\d{${digits}}$`);
+  return pattern.test(guess);
+}
+
+export default function DailyChallengePage() {
+  const [puzzleId, setPuzzleId] = useState("");
+  const [digits, setDigits] = useState(FALLBACK_DIGITS);
+  const [maxGuesses, setMaxGuesses] = useState(FALLBACK_MAX_GUESSES);
   const [guesses, setGuesses] = useState([]);
   const [guessInput, setGuessInput] = useState("");
-  const [message, setMessage] = useState(
-    "Guess the 7-digit phone number in 6 tries or less.",
-  );
+  const [message, setMessage] = useState("Loading daily challenge...");
+  const [isLoading, setIsLoading] = useState(true);
   const [gameOver, setGameOver] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState("Game Over");
+  const [modalTitle, setModalTitle] = useState("Daily Challenge");
   const [modalResultText, setModalResultText] = useState("");
   const [showShareActions, setShowShareActions] = useState(false);
   const [shareStatus, setShareStatus] = useState("");
 
-  function initGame() {
-    setSecret(randomDigitString(DIGITS));
-    setGuesses([]);
-    setGuessInput("");
-    setMessage("Guess the 7-digit phone number in 6 tries or less.");
-    setGameOver(false);
-    setIsModalOpen(false);
-    setShowShareActions(false);
-    setShareStatus("");
-  }
+  const storageKey = useMemo(
+    () => (puzzleId ? `numble:daily:${puzzleId}` : ""),
+    [puzzleId],
+  );
 
   useEffect(() => {
-    initGame();
+    let isMounted = true;
+
+    async function initialize() {
+      setIsLoading(true);
+      try {
+        const response = await fetch("/api/daily-challenge", {
+          method: "GET",
+          cache: "no-store",
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data?.error || "Could not load daily challenge.");
+        }
+
+        if (!isMounted) {
+          return;
+        }
+
+        setPuzzleId(data.puzzleId);
+        setDigits(data.digits);
+        setMaxGuesses(data.maxGuesses);
+
+        const key = `numble:daily:${data.puzzleId}`;
+        const saved = safeReadDailyState(key);
+
+        if (!saved) {
+          setMessage("Guess the 7-digit phone number in 6 tries or less.");
+          return;
+        }
+
+        const savedGuesses = Array.isArray(saved.guesses) ? saved.guesses : [];
+        const savedGameOver = Boolean(saved.isGameOver);
+        const savedIsWin = Boolean(saved.isWin);
+        const savedAnswer =
+          typeof saved.answer === "string" ? saved.answer : "";
+
+        setGuesses(savedGuesses);
+        setGameOver(savedGameOver);
+
+        if (!savedGameOver) {
+          setMessage(
+            `${Math.max(data.maxGuesses - savedGuesses.length, 0)} guesses left.`,
+          );
+          return;
+        }
+
+        setMessage("You already completed today's daily challenge.");
+        setModalTitle(savedIsWin ? "You Win!" : "Out of Guesses");
+        setModalResultText(
+          savedIsWin
+            ? `You got it in ${savedGuesses.length}/${data.maxGuesses}!`
+            : `Answer was ${savedAnswer}.`,
+        );
+        setShowShareActions(savedIsWin);
+        setIsModalOpen(true);
+      } catch (error) {
+        if (isMounted) {
+          setMessage(error.message || "Could not load daily challenge.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    initialize();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   function getShareMessage() {
-    return `I guessed ${secret} on Numble in ${guesses.length}/6 tries! Think you can beat me? ${window.location.origin}`;
-  }
-
-  function showResultModal({ title, resultText, showShare }) {
-    setModalTitle(title);
-    setModalResultText(resultText);
-    setShowShareActions(showShare);
-    setShareStatus("");
-    setIsModalOpen(true);
-  }
-
-  function validateGuess(guess) {
-    return /^\d{7}$/.test(guess);
-  }
-
-  function submitGuess() {
-    if (gameOver) {
-      return;
-    }
-
-    const guess = guessInput.trim();
-
-    if (!validateGuess(guess)) {
-      setMessage("Enter exactly 7 digits (0-9).");
-      return;
-    }
-
-    if (guesses.length >= MAX_GUESSES) {
-      return;
-    }
-
-    const colors = scoreGuess(guess, secret);
-    const nextGuesses = [...guesses, { value: guess, colors }];
-    setGuesses(nextGuesses);
-
-    if (guess === secret) {
-      setGameOver(true);
-      setMessage("");
-      showResultModal({
-        title: "You Win!",
-        resultText: `You guessed "${secret}" in ${nextGuesses.length}/${MAX_GUESSES} tries!`,
-        showShare: true,
-      });
-      return;
-    }
-
-    if (nextGuesses.length === MAX_GUESSES) {
-      setGameOver(true);
-      setMessage("");
-      showResultModal({
-        title: "Out of Guesses",
-        resultText: `Answer was ${secret}.`,
-        showShare: false,
-      });
-      return;
-    }
-
-    setMessage(`${MAX_GUESSES - nextGuesses.length} guesses left.`);
-    setGuessInput("");
+    return `I solved today's Numble (${puzzleId}) in ${guesses.length}/6 tries! Think you can beat me? ${window.location.origin}/daily-challenge`;
   }
 
   function openShareUrl(url) {
@@ -164,6 +163,103 @@ export default function Home() {
     }
   }
 
+  async function submitGuess() {
+    if (isLoading || !puzzleId) {
+      return;
+    }
+
+    if (gameOver) {
+      setMessage("You already completed today's daily challenge.");
+      return;
+    }
+
+    const guess = guessInput.trim();
+    if (!isValidGuess(guess, digits)) {
+      setMessage(`Enter exactly ${digits} digits (0-9).`);
+      return;
+    }
+
+    const attemptNumber = guesses.length + 1;
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/daily-challenge/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ puzzleId, guess, attemptNumber }),
+      });
+      const data = await response.json();
+
+      if (response.status === 409) {
+        setMessage(
+          "Daily challenge rolled over. Refresh to play today's puzzle.",
+        );
+        return;
+      }
+
+      if (!response.ok) {
+        setMessage(data?.error || "Could not submit guess.");
+        return;
+      }
+
+      const nextGuesses = [
+        ...guesses,
+        { value: data.guess, colors: data.colors },
+      ];
+      setGuesses(nextGuesses);
+      setGuessInput("");
+
+      if (data.isWin) {
+        setGameOver(true);
+        setMessage("You already completed today's daily challenge.");
+        setModalTitle("You Win!");
+        setModalResultText(
+          `You got it in ${nextGuesses.length}/${maxGuesses}!`,
+        );
+        setShowShareActions(true);
+        setIsModalOpen(true);
+        safeWriteDailyState(storageKey, {
+          puzzleId,
+          guesses: nextGuesses,
+          isGameOver: true,
+          isWin: true,
+          completedAt: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (data.isGameOver) {
+        setGameOver(true);
+        setMessage("You already completed today's daily challenge.");
+        setModalTitle("Out of Guesses");
+        setModalResultText(`Answer was ${data.answer}.`);
+        setShowShareActions(false);
+        setIsModalOpen(true);
+        safeWriteDailyState(storageKey, {
+          puzzleId,
+          guesses: nextGuesses,
+          isGameOver: true,
+          isWin: false,
+          answer: data.answer,
+          completedAt: new Date().toISOString(),
+        });
+        return;
+      }
+
+      setMessage(`${Math.max(data.attemptsRemaining, 0)} guesses left.`);
+      safeWriteDailyState(storageKey, {
+        puzzleId,
+        guesses: nextGuesses,
+        isGameOver: false,
+        isWin: false,
+      });
+    } catch {
+      setMessage("Network error while submitting guess.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   function handleInputKeyDown(event) {
     if (event.key === "Enter") {
       submitGuess();
@@ -173,38 +269,37 @@ export default function Home() {
   return (
     <>
       <div className="app">
-        <h1>Numble</h1>
-        <p>Guess the 7-digit phone number in 6 tries or less</p>
+        <h1>Numble Daily</h1>
+        <p>Guess today's 7-digit phone number</p>
         <div className="controls">
           <input
-            id="guessInput"
-            inputMode="tel"
             type="tel"
-            maxLength={DIGITS}
-            placeholder="Enter 7 digits"
+            inputMode="tel"
+            maxLength={digits}
+            placeholder={`Enter ${digits} digits`}
             value={guessInput}
             onChange={(event) => setGuessInput(event.target.value)}
             onKeyDown={handleInputKeyDown}
-            disabled={gameOver}
+            disabled={isLoading || gameOver}
           />
           <button
             type="button"
             className="primary"
             onClick={submitGuess}
-            disabled={gameOver}
+            disabled={isLoading || gameOver}
           >
-            Guess
+            {isLoading ? "Loading..." : "Guess"}
           </button>
         </div>
         <div className="board">
-          {Array.from({ length: MAX_GUESSES }, (_, row) => {
+          {Array.from({ length: maxGuesses }, (_, row) => {
             const guessObj = guesses[row];
-            const digits = guessObj ? guessObj.value.split("") : [];
+            const rowDigits = guessObj ? guessObj.value.split("") : [];
 
             return (
               <div className="row" key={row}>
-                {Array.from({ length: DIGITS }, (_, col) => {
-                  const digit = digits[col];
+                {Array.from({ length: digits }, (_, col) => {
+                  const digit = rowDigits[col];
                   const colorClass = guessObj ? guessObj.colors[col] : "";
                   const isHyphen = col === 2;
                   const tileClass = [
@@ -214,6 +309,7 @@ export default function Home() {
                   ]
                     .filter(Boolean)
                     .join(" ");
+
                   return (
                     <>
                       <div className={tileClass} key={col}>
@@ -242,9 +338,9 @@ export default function Home() {
           className="modal-card"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="resultTitle"
+          aria-labelledby="dailyResultTitle"
         >
-          <h2 id="resultTitle">{modalTitle}</h2>
+          <h2 id="dailyResultTitle">{modalTitle}</h2>
           <p className="modal-result">{modalResultText}</p>
           <div
             className="share"
@@ -271,11 +367,11 @@ export default function Home() {
               Copy result
             </button>
           </div>
-          <p className="modal-share-status">{shareStatus}</p>
+          {shareStatus && <p className="modal-share-status">{shareStatus}</p>}
           <div className="modal-actions">
-            <button type="button" className="primary" onClick={initGame}>
+            <Link href="/unlimited" className="primary">
               New Game
-            </button>
+            </Link>
           </div>
         </div>
       </div>
