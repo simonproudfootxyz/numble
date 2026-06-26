@@ -178,7 +178,8 @@ export default function Home() {
         <div className="controls">
           <input
             id="guessInput"
-            inputMode="phone"
+            inputMode="tel"
+            type="tel"
             maxLength={DIGITS}
             placeholder="Enter 7 digits"
             value={guessInput}
