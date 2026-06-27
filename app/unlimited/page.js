@@ -267,7 +267,7 @@ export default function Home() {
           aria-labelledby="resultTitle"
         >
           <h2 id="resultTitle">{modalTitle}</h2>
-          <p className="modal-result">{modalResultText}</p>
+          {modalResultText && <p className="modal-result">{modalResultText}</p>}
           <div
             className="share"
             style={{ display: showShareActions ? "flex" : "none" }}
@@ -295,9 +295,10 @@ export default function Home() {
             </button>
           </div>
           <p className="modal-share-status">{shareStatus}</p>
+          <p>There will be a new challenge tomorrow, see you then!</p>
           <div className="modal-actions">
             <button type="button" className="primary" onClick={initGame}>
-              New Game
+              Play Unlimited Mode
             </button>
           </div>
         </div>

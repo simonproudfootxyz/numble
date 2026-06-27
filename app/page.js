@@ -386,9 +386,10 @@ export default function DailyChallengePage() {
             </button>
           </div>
           {shareStatus && <p className="modal-share-status">{shareStatus}</p>}
+          <p>There will be a new challenge tomorrow, see you then!</p>
           <div className="modal-actions">
             <Link href="/unlimited" className="primary">
-              New Game
+              Play Unlimited Mode
             </Link>
           </div>
         </div>
