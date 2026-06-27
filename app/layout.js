@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Numble",
+  title: "Dialtone",
   description: "Guess the 7-digit phone number in 6 tries or less",
 };
 

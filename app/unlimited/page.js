@@ -92,7 +92,7 @@ export default function Home() {
 
   function getShareMessage() {
     const emojiGrid = getEmojiGrid(guesses);
-    return `I guessed ${getPhoneNumber(secret)} on Numble Unlimited in ${guesses.length}/6 guesses! \n${emojiGrid}\nWant to try? ${window.location.origin}/unlimited`;
+    return `Dialtone Unlimited ${guesses.length}/6\n${emojiGrid}\n${window.location.origin}/unlimited`;
   }
 
   function showResultModal({ title, resultText, showShare }) {
@@ -195,7 +195,7 @@ export default function Home() {
   return (
     <>
       <div className="app">
-        <h1>Numble</h1>
+        <h1>Dialtone</h1>
         <p>Guess the 7-digit phone number in 6 tries or less</p>
         <div className="controls">
           <input

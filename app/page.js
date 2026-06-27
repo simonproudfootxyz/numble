@@ -63,7 +63,7 @@ export default function DailyChallengePage() {
   const [shareStatus, setShareStatus] = useState("");
 
   const storageKey = useMemo(
-    () => (puzzleId ? `numble:daily:${puzzleId}` : ""),
+    () => (puzzleId ? `dialtone:daily:${puzzleId}` : ""),
     [puzzleId],
   );
 
@@ -91,7 +91,7 @@ export default function DailyChallengePage() {
         setDigits(data.digits);
         setMaxGuesses(data.maxGuesses);
 
-        const key = `numble:daily:${data.puzzleId}`;
+        const key = `dialtone:daily:${data.puzzleId}`;
         const saved = safeReadDailyState(key);
 
         if (!saved) {
@@ -115,7 +115,7 @@ export default function DailyChallengePage() {
           return;
         }
 
-        setMessage("You already completed today's daily challenge.");
+        setMessage("You completed today's daily challenge.");
         setModalTitle(savedIsWin ? "You Win!" : "Out of Guesses");
         setModalResultText(
           savedIsWin &&
@@ -143,7 +143,7 @@ export default function DailyChallengePage() {
 
   function getShareMessage() {
     const emojiGrid = getEmojiGrid(guesses);
-    return `I solved today's Numble (${puzzleId}) in ${guesses.length}/6 guesses! \n${emojiGrid}\nThink you can beat me? ${window.location.origin}`;
+    return `Dialtone Daily ${puzzleId} ${guesses.length}/6\n${emojiGrid}\n${window.location.origin}`;
   }
 
   function openShareUrl(url) {
@@ -185,7 +185,7 @@ export default function DailyChallengePage() {
     }
 
     if (gameOver) {
-      setMessage("You already completed today's daily challenge.");
+      setMessage("You completed today's daily challenge.");
       return;
     }
 
@@ -227,7 +227,7 @@ export default function DailyChallengePage() {
 
       if (data.isWin) {
         setGameOver(true);
-        setMessage("You already completed today's daily challenge.");
+        setMessage("You completed today's daily challenge.");
         setModalTitle("You Win!");
         setModalResultText(
           `You got it in ${nextGuesses.length}/${maxGuesses}!`,
@@ -246,7 +246,7 @@ export default function DailyChallengePage() {
 
       if (data.isGameOver) {
         setGameOver(true);
-        setMessage("You already completed today's daily challenge.");
+        setMessage("You completed today's daily challenge.");
         setModalTitle("Out of Guesses");
         setModalResultText(`Answer was ${data.answer}.`);
         setShowShareActions(false);
@@ -285,7 +285,7 @@ export default function DailyChallengePage() {
   return (
     <>
       <div className="app">
-        <h1>Numble Daily</h1>
+        <h1>Dialtone Daily</h1>
         <p>Guess today's 7-digit phone number</p>
         <div className="controls">
           <input

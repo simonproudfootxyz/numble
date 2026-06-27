@@ -1,6 +1,6 @@
-# Numble
+# Dialtone
 
-Numble is a Next.js number-guessing game with:
+Dialtone is a Next.js number-guessing game with:
 
 - Random mode at `/`
 - Seeded daily challenge mode at `/daily-challenge`
@@ -20,7 +20,6 @@ Numble is a Next.js number-guessing game with:
    ```
 
 3. Set `DAILY_SEED` in `.env.local`.
-
    - Use a long random value.
    - Set it once per environment (development/staging/production).
    - Do not expose it to the browser.
