@@ -268,33 +268,45 @@ export default function Home() {
         >
           <h2 id="resultTitle">{modalTitle}</h2>
           {modalResultText && <p className="modal-result">{modalResultText}</p>}
-          <div
-            className="share"
-            style={{ display: showShareActions ? "flex" : "none" }}
-          >
-            <button
-              type="button"
-              className="secondary"
-              onClick={shareOnTwitter}
-            >
-              Share on Twitter
-            </button>
-            <button
-              type="button"
-              className="secondary"
-              onClick={shareOnBluesky}
-            >
-              Share on Bluesky
-            </button>
+          {showShareActions && (
+            <>
+              <div
+                className="share"
+                style={{ display: showShareActions ? "flex" : "none" }}
+              >
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={shareOnTwitter}
+                >
+                  Share on X
+                </button>
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={shareOnBluesky}
+                >
+                  Share on Bluesky
+                </button>
 
-            <button type="button" className="secondary" onClick={shareOnReddit}>
-              Share on Reddit
-            </button>
-            <button type="button" className="secondary" onClick={copyShareText}>
-              Copy result
-            </button>
-          </div>
-          <p className="modal-share-status">{shareStatus}</p>
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={shareOnReddit}
+                >
+                  Share on Reddit
+                </button>
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={copyShareText}
+                >
+                  Copy result
+                </button>
+              </div>
+              <p className="modal-share-status">{shareStatus}</p>
+            </>
+          )}
           <p>There will be a new challenge tomorrow, see you then!</p>
           <div className="modal-actions">
             <button type="button" className="primary" onClick={initGame}>

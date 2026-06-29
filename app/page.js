@@ -115,7 +115,11 @@ export default function DailyChallengePage() {
           return;
         }
 
-        setMessage("You completed today's daily challenge.");
+        setMessage(
+          savedIsWin
+            ? "You completed today's daily challenge."
+            : "You already played today's daily challenge.",
+        );
         setModalTitle(savedIsWin ? "You Win!" : "Out of Guesses");
         setModalResultText(
           savedIsWin &&
