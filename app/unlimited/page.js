@@ -242,7 +242,9 @@ export default function Home() {
                         {digit ?? ""}
                       </div>
                       {isHyphen && (
-                        <div className="tile tile--blank tile--hyphen">-</div>
+                        <div className="tile tile--blank tile--hyphen">
+                          &mdash;
+                        </div>
                       )}
                     </>
                   );
