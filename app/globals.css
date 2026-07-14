@@ -1,10 +1,37 @@
 :root {
-  --bg: #121213;
+  --grey-100: #ffffff;
+  --grey-200: #fcfbff;
+  --grey-300: #faf9ff;
+  --grey-350: #f0eff8;
+  --grey-400: #e7e5f4;
+  --grey-450: #d2d1e2;
+  --grey-500: #aca7c2;
+  --grey-550: #a3a0b4;
+  --grey-600: #938eaa;
+  --grey-700: #706a84;
+  --grey-800: #504c65;
+  --grey-850: #3a3747;
+  --grey-900: #252231;
+  --grey-950: #121119;
+
+  --primary-color: #ffff4f;
+  --primary-color--hover: #ffff90;
+  --primary-color--pressed: #efef4a;
+  --accent: #6ce0b7;
+
+  --white: var(--grey-100);
+  --modal-background: var(--grey-900);
+  --font-jost: "Jost", sans-serif;
+  --jost:
+    var(--font-jost), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Numble compatibility aliases */
+  --bg: var(--grey-950);
+  --text: var(--white);
   --tile: #3a3a3c;
-  --text: #ffffff;
-  --green: #538d4e;
-  --yellow: #b59f3b;
-  --gray: #3a3a3c;
+  --green: var(--accent);
+  --yellow: var(--primary-color);
+  --gray: var(--grey-800);
   --border: #565758;
 }
 
@@ -14,12 +41,7 @@
 
 body {
   margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    Segoe UI,
-    Roboto,
-    sans-serif;
+  font-family: var(--jost);
   background: var(--bg);
   color: var(--text);
   display: grid;
@@ -72,13 +94,15 @@ h1 {
 }
 
 .tile.green {
-  background: var(--green);
-  border-color: var(--green);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--grey-950);
 }
 
 .tile.yellow {
-  background: var(--yellow);
-  border-color: var(--yellow);
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--grey-950);
 }
 
 .tile.gray {
@@ -95,58 +119,152 @@ h1 {
 }
 
 input {
-  width: 220px;
-  padding: 10px 12px;
+  /* width: 220px; */
+  padding: 0.5rem 1rem;
   font-size: 1rem;
   border-radius: 6px;
-  border: 1px solid #666;
   outline: none;
   text-align: center;
-  letter-spacing: 0.08em;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--jost);
 }
 
-button {
-  padding: 10px 14px;
-  border: none;
-  border-radius: 6px;
-  font-weight: 700;
-  cursor: pointer;
+input:focus {
+  border-color: var(--grey-500);
+  box-shadow: 0 0 0 2px rgba(172, 167, 194, 0.25);
 }
 
+/* Buttons */
+.button,
+button.primary,
+button.secondary,
 a.primary,
 a.secondary {
-  display: inline-block;
-  padding: 10px 14px;
-  border-radius: 6px;
+  background: var(--grey-300);
+  color: var(--grey-950);
+  font-family: var(--jost);
+  font-size: 0.85rem;
   font-weight: 700;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  height: 44px;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.button:not(.disabled, [disabled]):hover,
+.button:not(.disabled, [disabled]):focus,
+button.primary:not(:disabled):hover,
+button.primary:not(:disabled):focus,
+button.secondary:not(:disabled):hover,
+button.secondary:not(:disabled):focus,
+a.primary:hover,
+a.primary:focus,
+a.secondary:hover,
+a.secondary:focus {
+  background: var(--grey-400);
+}
+
+.button:not(.disabled, [disabled]):active,
+button.primary:not(:disabled):active,
+button.secondary:not(:disabled):active,
+a.primary:active,
+a.secondary:active {
+  background: var(--grey-450);
+}
+
+.button:focus-visible,
+button.primary:focus-visible,
+button.secondary:focus-visible,
+a.primary:focus-visible,
+a.secondary:focus-visible {
+  outline: 2px solid var(--grey-550);
+  outline-offset: 2px;
+}
+
+.button.disabled,
+.button[disabled],
 button:disabled {
-  opacity: 0.65;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-button.primary {
-  background: #2563eb;
-  color: white;
+.button--mini {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  height: auto;
 }
 
+.button--full-width {
+  width: 100%;
+}
+
+.button--primary,
+button.primary,
 a.primary {
-  background: #2563eb;
-  color: white;
-  font-size: 0.85rem;
+  background: var(--primary-color);
+  color: var(--grey-950);
 }
 
-button.secondary {
-  background: #444;
-  color: #fff;
+.button--primary:not(.disabled, [disabled]):hover,
+.button--primary:not(.disabled, [disabled]):focus,
+button.primary:not(:disabled):hover,
+button.primary:not(:disabled):focus,
+a.primary:hover,
+a.primary:focus {
+  background: var(--primary-color--hover);
 }
 
+.button--primary:not(.disabled, [disabled]):active,
+button.primary:not(:disabled):active,
+a.primary:active {
+  background: var(--primary-color--pressed);
+}
+
+.button--invert,
+button.secondary,
 a.secondary {
-  background: #444;
-  color: #fff;
+  background: transparent;
+  color: var(--grey-300);
+  border: 1px solid var(--grey-300);
+}
+
+.button--invert:not(.disabled, [disabled]):hover,
+.button--invert:not(.disabled, [disabled]):focus,
+button.secondary:not(:disabled):hover,
+button.secondary:not(:disabled):focus,
+a.secondary:hover,
+a.secondary:focus {
+  background: transparent;
+  color: var(--grey-450);
+  border-color: var(--grey-450);
+}
+
+.button--invert:not(.disabled, [disabled]):active,
+button.secondary:not(:disabled):active,
+a.secondary:active {
+  background: transparent;
+  color: var(--grey-450);
+  border-color: var(--grey-450);
+}
+
+.button--text {
+  background: transparent;
+  color: var(--grey-550);
+  border: none;
+  height: auto;
+  padding: 0;
+  font-weight: 500;
+}
+
+.button--text:not(.disabled, [disabled]):hover,
+.button--text:not(.disabled, [disabled]):focus {
+  color: var(--white);
+  text-decoration: underline;
 }
 
 .message {
@@ -193,13 +311,15 @@ a.secondary {
   background: var(--gray);
 }
 
+/* Modal shell aligned with Lockpick style */
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   display: grid;
   place-items: center;
   padding: 20px;
+  z-index: 1000;
 }
 
 .modal[hidden] {
@@ -207,16 +327,19 @@ a.secondary {
 }
 
 .modal-card {
-  width: min(420px, 100%);
-  background: #1f2023;
-  border: 1px solid #3e3f42;
+  width: min(440px, 100%);
+  background: var(--modal-background);
+  border: 1px solid var(--grey-800);
   border-radius: 12px;
-  padding: 20px;
+  padding: 22px;
   text-align: center;
+  color: var(--white);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .modal-card h2 {
   margin: 0 0 10px;
+  font-size: 1.5rem;
 }
 
 .modal-result {
@@ -228,7 +351,7 @@ a.secondary {
   min-height: 20px;
   margin: 8px 0 0;
   font-size: 0.9rem;
-  opacity: 0.9;
+  color: var(--grey-350);
 }
 
 .modal-actions {

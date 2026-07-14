@@ -211,7 +211,7 @@ export default function Home() {
           />
           <button
             type="button"
-            className="primary"
+            className="button button--primary"
             onClick={submitGuess}
             disabled={gameOver}
           >
@@ -276,14 +276,14 @@ export default function Home() {
               >
                 <button
                   type="button"
-                  className="secondary"
+                  className="button button--invert"
                   onClick={shareOnTwitter}
                 >
                   Share on X
                 </button>
                 <button
                   type="button"
-                  className="secondary"
+                  className="button button--invert"
                   onClick={shareOnBluesky}
                 >
                   Share on Bluesky
@@ -291,14 +291,14 @@ export default function Home() {
 
                 <button
                   type="button"
-                  className="secondary"
+                  className="button button--invert"
                   onClick={shareOnReddit}
                 >
                   Share on Reddit
                 </button>
                 <button
                   type="button"
-                  className="secondary"
+                  className="button button--invert"
                   onClick={copyShareText}
                 >
                   Copy result
@@ -309,7 +309,11 @@ export default function Home() {
           )}
           <p>There will be a new challenge tomorrow, see you then!</p>
           <div className="modal-actions">
-            <button type="button" className="primary" onClick={initGame}>
+            <button
+              type="button"
+              className="button button--primary"
+              onClick={initGame}
+            >
               Play Unlimited Mode
             </button>
           </div>

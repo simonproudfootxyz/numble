@@ -304,7 +304,7 @@ export default function DailyChallengePage() {
           />
           <button
             type="button"
-            className="primary"
+            className="button button--primary"
             onClick={submitGuess}
             disabled={isLoading || gameOver}
           >
@@ -361,7 +361,7 @@ export default function DailyChallengePage() {
           aria-labelledby="dailyResultTitle"
         >
           <h2 id="dailyResultTitle">{modalTitle}</h2>
-          <p>{message}</p>
+          {!guesses.length !== maxGuesses && <p>{message}</p>}
           {modalResultText && <p className="modal-result">{modalResultText}</p>}
           <div
             className="share"
@@ -369,30 +369,38 @@ export default function DailyChallengePage() {
           >
             <button
               type="button"
-              className="secondary"
+              className="button button--invert"
               onClick={shareOnTwitter}
             >
-              Share on Twitter
+              Share on X
             </button>
 
             <button
               type="button"
-              className="secondary"
+              className="button button--invert"
               onClick={shareOnBluesky}
             >
               Share on Bluesky
             </button>
-            <button type="button" className="secondary" onClick={shareOnReddit}>
+            <button
+              type="button"
+              className="button button--invert"
+              onClick={shareOnReddit}
+            >
               Share on Reddit
             </button>
-            <button type="button" className="secondary" onClick={copyShareText}>
+            <button
+              type="button"
+              className="button button--invert"
+              onClick={copyShareText}
+            >
               Copy result
             </button>
           </div>
           {shareStatus && <p className="modal-share-status">{shareStatus}</p>}
           <p>There will be a new challenge tomorrow, see you then!</p>
           <div className="modal-actions">
-            <Link href="/unlimited" className="primary">
+            <Link href="/unlimited" className="button button--primary">
               Play Unlimited Mode
             </Link>
           </div>
