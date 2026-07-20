@@ -250,9 +250,8 @@ export default function DailyChallengePage() {
 
       if (data.isGameOver) {
         setGameOver(true);
-        setMessage("You completed today's daily challenge.");
+        setMessage("You played today's daily challenge.");
         setModalTitle("Out of Guesses");
-        setModalResultText(`Answer was ${data.answer}.`);
         setShowShareActions(false);
         setIsModalOpen(true);
         safeWriteDailyState(storageKey, {
